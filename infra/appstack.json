@@ -1,1 +1,8 @@
-{}
+{
+  "aws_cognito_user_pool_id": "us-east-2_swlvPtr4R",
+  "region": "us-east-2",
+  "aws_cognito_user_pool_client_id": "2g5oc3otf96r1t8mj715pmsvtl",
+  "aws_cognito_user_pool_domain_main_id": "example-terraform-hosted-ui",
+  "aws_cognito_user_example_username": "halilagin",
+  "aws_cognito_user_example_password": "YourTempPassword2024!!"
+}

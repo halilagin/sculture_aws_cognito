@@ -23,7 +23,7 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
 
 resource "aws_lambda_function" "example_lambda" {
   function_name = "ExampleLambdaFunction"
-  handler       = "lambda_handler.lambda_handler"
+  handler       = "lambda_function.lambda_handler"
   runtime       = "python3.8"
 
   s3_bucket         = aws_s3_bucket.lambda_fns.bucket
