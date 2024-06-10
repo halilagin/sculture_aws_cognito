@@ -20,7 +20,7 @@ def get_access_token(user_pool_id, client_id, username, password, region):
                 'PASSWORD': password,
             }
         )
-        return response['AuthenticationResult']['AccessToken']
+        return response['AuthenticationResult']
     except client.exceptions.NotAuthorizedException as e:
         print (str(e))
         print("The username or password is incorrect.")
@@ -38,4 +38,4 @@ username = appstack["aws_cognito_user_example_username"] #'halilagin'
 password = appstack["aws_cognito_user_example_password"] #'YourTempPassword2024!!'
 region = appstack["region"] #'us-east-2'
 access_token = get_access_token(user_pool_id, client_id, username, password, region)
-print("Access Token:", access_token)
+print(access_token)
