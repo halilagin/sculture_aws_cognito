@@ -1,3 +1,3 @@
 source /usr/local/bin/awsha
-terraform destroy
+terraform destroy -var-file=default.tfvars
 

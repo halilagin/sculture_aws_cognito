@@ -31,6 +31,13 @@ resource "aws_cognito_user_pool" "sculture" {
       max_length = 2048
     }
   }
+
+  provisioner "local-exec" {
+    command = <<EOT
+    jq '.aws_cognito_user_pool_id = "${aws_cognito_user_pool.sculture.id}"' ${var.appstack_name} |sponge ${var.appstack_name}
+    jq '.region = "${var.region}"' ${var.appstack_name} |sponge ${var.appstack_name}
+    EOT
+  }
 }
 
 resource "aws_cognito_user_pool_client" "sculture_pool_client" {
@@ -58,12 +65,18 @@ resource "aws_cognito_user_pool_client" "sculture_pool_client" {
   allowed_oauth_scopes                 = ["phone", "email", "openid", "profile", "aws.cognito.signin.user.admin"]
   callback_urls                        = ["https://sculture.local/callback"]
   logout_urls                          = ["https://sculture.local/logout"]
+  provisioner "local-exec" {
+    command = "jq '.aws_cognito_user_pool_client_id = \"${aws_cognito_user_pool_client.sculture_pool_client.id}\"' ${var.appstack_name} |sponge ${var.appstack_name}"
+  }
 }
 
 
 resource "aws_cognito_user_pool_domain" "main" {
   domain       = "example-terraform-hosted-ui"
   user_pool_id = aws_cognito_user_pool.sculture.id
+  provisioner "local-exec" {
+    command = "jq '.aws_cognito_user_pool_domain_main_id = \"${aws_cognito_user_pool_domain.main.id}\"' ${var.appstack_name} |sponge ${var.appstack_name}"
+  }
 }
 
 
@@ -89,6 +102,12 @@ resource "aws_cognito_user" "example_user" {
 
   # Optional: User status can be specified (e.g., "CONFIRMED" to bypass email verification)
   #user_status = "CONFIRMED"
+  provisioner "local-exec" {
+    command = <<EOT
+    jq '.aws_cognito_user_example_username = "${aws_cognito_user.example_user.username}"' ${var.appstack_name} |sponge ${var.appstack_name}
+    jq '.aws_cognito_user_example_password = "${aws_cognito_user.example_user.password}"' ${var.appstack_name} |sponge ${var.appstack_name}
+    EOT
+  }
 }
 
 
