@@ -41,7 +41,7 @@ resource "aws_cognito_user_pool_client" "sculture_pool_client" {
 
   prevent_user_existence_errors = "ENABLED"
 
-  generate_secret = true
+  #generate_secret = true
 
   # Identity providers
   supported_identity_providers = ["COGNITO"]
@@ -51,7 +51,7 @@ resource "aws_cognito_user_pool_client" "sculture_pool_client" {
     access_token = "minutes"
   }
 
-  explicit_auth_flows = ["ALLOW_CUSTOM_AUTH","ALLOW_USER_SRP_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"]
+  explicit_auth_flows = ["ALLOW_CUSTOM_AUTH","ALLOW_USER_SRP_AUTH", "ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_PASSWORD_AUTH", "ALLOW_ADMIN_USER_PASSWORD_AUTH"]
 
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_flows                  = ["implicit" ]
