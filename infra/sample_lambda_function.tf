@@ -21,13 +21,20 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
 }
 
 
+
+#variable "lambda_fn_names" {
+  #type    = list(string)
+  #default = tolist([ for i in range(2): format("lambda_function_%03d", i) ])
+#}
+
 resource "aws_lambda_function" "example_lambda" {
-  function_name = "ExampleLambdaFunction"
+  for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
+  function_name = each.key
   handler       = "lambda_function.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   s3_bucket         = aws_s3_bucket.lambda_fns.bucket
-  s3_key            = "sample01_lambda_function.zip"
+  s3_key            = "${each.key}.zip"
 
   role = aws_iam_role.lambda_execution_role.arn
 

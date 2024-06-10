@@ -1,4 +1,8 @@
+lambda_fn_dirs=`ls -d *|grep lambda_function_`
 
-cd sample01
-zip sample01_lambda_function.zip lambda_handler.py
-mv sample01_lambda_function.zip ../
+for lf in $lambda_fn_dirs; do 
+  cd $lf
+  zip ${lf}.zip lambda_function.py
+  mv ${lf}.zip ../
+  cd ..
+done
