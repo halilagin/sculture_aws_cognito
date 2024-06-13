@@ -36,6 +36,9 @@ resource "aws_cognito_user_pool" "sculture" {
   }
 }
 
+
+
+
 resource "aws_cognito_user_pool_client" "sculture_pool_client" {
   name         = "sculture-client"
   user_pool_id = aws_cognito_user_pool.sculture.id

@@ -39,4 +39,19 @@ resource "aws_lambda_function" "example_lambda" {
   role = aws_iam_role.lambda_execution_role.arn
 
 	depends_on = [ aws_s3_object.sample01_lambda_fn ]
+
+  tags = {
+    Hash = null_resource.deploy_lambda_files.triggers.dir_sha1
+  }
+
+}
+
+
+resource "null_resource" "deploy_lambda_files" {
+  # Changes to any configuration file, requires the re-provisioning
+  triggers = {
+    dir_sha1    = sha1(join("", [for f in fileset(var.lambda_src_root, "**/*") : filesha1(format("%s/%s", var.lambda_src_root, f))]))
+
+  }
+  
 }
