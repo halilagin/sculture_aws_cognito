@@ -1,3 +1,4 @@
+#vim folds: zo, zc, ZM, zR
 
 resource "aws_api_gateway_rest_api" "cognito_api" {
   name = "CognitoAPI"
@@ -5,20 +6,21 @@ resource "aws_api_gateway_rest_api" "cognito_api" {
 	endpoint_configuration {
     types = ["REGIONAL"]
   }	
-provisioner "local-exec" {
+  provisioner "local-exec" {
     command = <<EOT
     jq '.aws_api_gateway_rest_api_id = "${aws_api_gateway_rest_api.cognito_api.id}"' ${var.appstack_name} |sponge ${var.appstack_name}
     EOT
- } 
+  } 
 }
 
 
 
 
 resource "aws_api_gateway_resource" "api_resource" {
+  for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
   rest_api_id = aws_api_gateway_rest_api.cognito_api.id
   parent_id   = aws_api_gateway_rest_api.cognito_api.root_resource_id
-  path_part   = "example"
+  path_part   = each.key
 }
 
 
@@ -33,32 +35,39 @@ resource "aws_api_gateway_authorizer" "cognito_authorizer" {
 
 
 resource "aws_api_gateway_method" "api_method" {
+  for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
   rest_api_id   = aws_api_gateway_rest_api.cognito_api.id
-  resource_id   = aws_api_gateway_resource.api_resource.id
+  resource_id   = aws_api_gateway_resource.api_resource[each.key].id
   http_method   = "POST"
   authorization =   "COGNITO_USER_POOLS"
   authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
 }
 
 resource "aws_api_gateway_integration" "lambda_integration" {
+  for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
   rest_api_id = aws_api_gateway_rest_api.cognito_api.id
-  resource_id = aws_api_gateway_resource.api_resource.id
-  http_method = aws_api_gateway_method.api_method.http_method
+  resource_id = aws_api_gateway_resource.api_resource[each.key].id
+  http_method = aws_api_gateway_method.api_method[each.key].http_method
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.example_lambda["lambda_function_000"].invoke_arn
+  uri                     = aws_lambda_function.example_lambda[each.key].invoke_arn
 
 }
 
 
 resource "aws_api_gateway_deployment" "api_deployment" {
+  stage_name  = "stage"
+  stage_description = "Deployed at ${timestamp()}"
+  rest_api_id = aws_api_gateway_rest_api.cognito_api.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
   depends_on = [
     aws_api_gateway_integration.lambda_integration
   ]
-
-  rest_api_id = aws_api_gateway_rest_api.cognito_api.id
-  #stage_name  = "stage"
 }
 
 
@@ -70,7 +79,8 @@ resource "aws_cloudwatch_log_group" "example" {
 
 
 resource "aws_api_gateway_stage" "example" {
-  stage_name    = "stage"
+  #for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
+  stage_name    =  "stage"
   rest_api_id   = aws_api_gateway_rest_api.cognito_api.id
   deployment_id = aws_api_gateway_deployment.api_deployment.id
 
@@ -137,9 +147,10 @@ resource "aws_iam_role_policy" "api_gw_cloudwatch" {
 
 # Lambda
 resource "aws_lambda_permission" "apigw_lambda" {
+  for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.example_lambda["lambda_function_000"].function_name
+  function_name = aws_lambda_function.example_lambda[each.key].function_name
   principal     = "apigateway.amazonaws.com"
 
   ## More: http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
