@@ -78,30 +78,6 @@ resource "aws_cloudwatch_log_group" "example" {
 
 
 
-resource "aws_api_gateway_stage" "example" {
-  #for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
-  stage_name    =  "stage"
-  rest_api_id   = aws_api_gateway_rest_api.cognito_api.id
-  deployment_id = aws_api_gateway_deployment.api_deployment.id
-
-
-  access_log_settings {
-    format = jsonencode({
-      "requestId" = "$context.requestId",
-      "ip"        = "$context.identity.sourceIp",
-      "caller"    = "$context.identity.caller",
-      "user"      = "$context.identity.user",
-      "requestTime" = "$context.requestTime",
-      "httpMethod" = "$context.httpMethod",
-      "resourcePath" = "$context.resourcePath",
-      "status"    = "$context.status",
-      "protocol"  = "$context.protocol",
-      "responseLength" = "$context.responseLength"
-    })
-    destination_arn = aws_cloudwatch_log_group.example.arn
-  }
-}
-
 
 # Ensure you have the AWS IAM role and policy in place for API Gateway to write logs
 resource "aws_iam_role" "api_gw_cloudwatch" {
