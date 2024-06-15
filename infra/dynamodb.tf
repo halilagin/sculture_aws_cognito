@@ -3,7 +3,7 @@
 #vim: setlocal foldmethod=syntax
 
   resource "aws_dynamodb_table" "dyn_simple_table" {
-    name           = "dyn_simple_table"
+    name           = var.dynamodb_table_name
     billing_mode   = "PROVISIONED"
     read_capacity  = 10
     write_capacity = 10

@@ -20,6 +20,10 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_dynamodb_policy" {
+  role       = aws_iam_role.lambda_execution_role.name
+  policy_arn = aws_iam_policy.access_dynamodb_rw.arn
+}
 
 
 #variable "lambda_fn_names" {
@@ -31,7 +35,7 @@ resource "aws_lambda_function" "example_lambda" {
   for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
   function_name = each.key
   handler       = "lambda_function.lambda_handler"
-  runtime       = "python3.12"
+  runtime       = var.python_runtime
 
   s3_bucket         = aws_s3_bucket.lambda_fns.bucket
   s3_key            = "${each.key}.zip"

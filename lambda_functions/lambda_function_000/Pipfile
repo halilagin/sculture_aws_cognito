@@ -4,12 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-boto3 = "*"
 requests = "*"
-ipykernel = "*"
 
 [dev-packages]
-euporie = "*"
 
 [requires]
-python_version = "3.12"
+python_version = "3.10"
