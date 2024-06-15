@@ -1,4 +1,5 @@
 #vim folds: zo, zc, ZM, zR
+#vim: setlocal foldmethod=syntax
 
 resource "aws_api_gateway_rest_api" "cognito_api" {
   name = "CognitoAPI"
@@ -13,9 +14,6 @@ resource "aws_api_gateway_rest_api" "cognito_api" {
   } 
 }
 
-
-
-
 resource "aws_api_gateway_resource" "api_resource" {
   for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
   rest_api_id = aws_api_gateway_rest_api.cognito_api.id
@@ -23,16 +21,12 @@ resource "aws_api_gateway_resource" "api_resource" {
   path_part   = each.key
 }
 
-
 resource "aws_api_gateway_authorizer" "cognito_authorizer" {
   name          = "cognito_authorizer"
   type          = "COGNITO_USER_POOLS"
   rest_api_id   = aws_api_gateway_rest_api.cognito_api.id
   provider_arns = [aws_cognito_user_pool.sculture.arn]
 }
-
-
-
 
 resource "aws_api_gateway_method" "api_method" {
   for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
@@ -55,7 +49,6 @@ resource "aws_api_gateway_integration" "lambda_integration" {
 
 }
 
-
 resource "aws_api_gateway_deployment" "api_deployment" {
   stage_name  = "stage"
   stage_description = "Deployed at ${timestamp()}"
@@ -69,8 +62,6 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     aws_api_gateway_integration.lambda_integration
   ]
 }
-
-
 
 resource "aws_cloudwatch_log_group" "example" {
     name = "/aws/apigateway/${aws_api_gateway_rest_api.cognito_api.name}"
