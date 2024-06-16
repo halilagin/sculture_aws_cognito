@@ -16,7 +16,7 @@ for lf in $lambda_fn_dirs; do
   zip -r ${lf}.zip *
   mv ${lf}.zip  $lf_dir
   cd $lf_dir
-  zip  ${lf}.zip lambda_function.py
+  zip -r  ${lf}.zip *
   mv ${lf}.zip ../
   cd ..
 done
