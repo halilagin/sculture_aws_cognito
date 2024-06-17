@@ -1,6 +1,6 @@
-import { createContext, useState, useContext, ReactNode } from 'react';
+import { createContext, useState, ReactNode } from 'react';
 import AppUserPool from './AppUserPool';
-import { AuthenticationDetails, CognitoUser, CognitoUserAttribute } from 'amazon-cognito-identity-js';
+import { AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
 
 // Define the shape of the authentication context
 interface AuthContextType {

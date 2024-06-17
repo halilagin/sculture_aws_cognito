@@ -7,7 +7,7 @@ import UserChangePassword from './UserChangePassword';
 
 const UserSettings = () => {
     const [status, setStatus] = useState(false);
-    const { getSession, logout } = useContext(AuthContext);
+    const { getSession } = useContext(AuthContext);
 
 
     useEffect(() => {
