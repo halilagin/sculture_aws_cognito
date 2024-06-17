@@ -17,6 +17,7 @@ username = 'halilagin'
 # )
 # print(users_resp)
 
+
 try:
 	cognito_response = client.admin_get_user(UserPoolId=user_pool_id, Username=username)
 
