@@ -13,17 +13,18 @@ resource "aws_amplify_app" "hello_world_amplify" {
         preBuild:
           commands:
             - cd frontend
-            - yarn install
+            - mkdir -p dist
+            - npm install
         build:
           commands:
-            - yarn run build
+            - npm run build
       artifacts:
-        baseDirectory: build
+        baseDirectory: frontend/dist
         files:
-          - '**/*'
+          - "**/*"
       cache:
         paths:
-          - node_modules/**/*
+          - frontend/node_modules/**/*
   EOT
 
   # The default rewrites and redirects added by the Amplify Console.
@@ -57,3 +58,4 @@ resource "aws_amplify_domain_association" "domain_association" {
   }
 
 }
+
