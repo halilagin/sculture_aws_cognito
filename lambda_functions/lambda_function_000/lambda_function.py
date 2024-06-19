@@ -1,6 +1,6 @@
 import json
 import requests
-def lambda_handler(event, context):
+def handler(event, context):
     # Print the received event to the CloudWatch Logs
     print("Received event: " + str(event))
     data = {} #json.loads(event['body'])
@@ -25,4 +25,4 @@ def lambda_handler(event, context):
 
 
 if __name__ == '__main__':
-    print(lambda_handler({'body': '{}'}, None))
+    print(handler({'body': '{}'}, None))

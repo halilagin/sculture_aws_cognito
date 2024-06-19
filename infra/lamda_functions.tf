@@ -34,8 +34,10 @@ resource "aws_iam_role_policy_attachment" "lambda_dynamodb_policy" {
 resource "aws_lambda_function" "example_lambda" {
   for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
   function_name = each.key
-  handler       = "lambda_function.lambda_handler"
+  handler       = "lambda_function.handler"
   runtime       = var.python_runtime
+  #amd64
+  architectures = ["arm64"]
 
   s3_bucket         = aws_s3_bucket.lambda_fns.bucket
   s3_key            = "${each.key}.zip"

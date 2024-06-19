@@ -17,7 +17,7 @@ variable "repository" {
 variable "app_name" {
   type        = string
   description = "AWS Amplify App Name"
-  default     = "hello-world"
+  default     = "hello-world2"
 }
 
 variable "branch_name" {
@@ -28,6 +28,6 @@ variable "branch_name" {
 
 variable "domain_name" {
   type        = string
-  default     = "amplify001.peralabs.co.uk" #change this to your custom domain
+  default     = "amplify002.peralabs.co.uk" #change this to your custom domain
   description = "AWS Amplify Domain Name"
 }

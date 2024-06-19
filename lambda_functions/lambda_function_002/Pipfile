@@ -5,6 +5,10 @@ name = "pypi"
 
 [packages]
 requests = "*"
+fastapi = "0.99.1"
+uvicorn = "*"
+mangum = "*"
+pydantic-core = {version = "*",  markers = "sys_platform == 'linux' or sys_platform == 'darwin'"}
 
 [dev-packages]
 

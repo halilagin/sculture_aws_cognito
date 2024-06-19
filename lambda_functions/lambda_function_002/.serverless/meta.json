@@ -1,0 +1,103 @@
+{
+  "/Users/halilagin/root/github/sculture-aws-cognito-test/lambda_functions/lambda_function_002": {
+    "versionSfCore": null,
+    "versionFramework": "4.1.4",
+    "isWithinCompose": false,
+    "isCompose": false,
+    "composeOrgName": null,
+    "composeResolverProviders": {},
+    "composeServiceName": null,
+    "servicePath": "/Users/halilagin/root/github/sculture-aws-cognito-test/lambda_functions/lambda_function_002",
+    "serviceConfigFileName": "serverless.yaml",
+    "service": {
+      "service": "fastapi-lambda",
+      "provider": {
+        "name": "aws",
+        "runtime": "python3.10",
+        "stage": "dev",
+        "region": "us-east-2",
+        "versionFunctions": true
+      },
+      "functions": {
+        "api": {
+          "handler": "app.handler",
+          "events": [
+            {
+              "http": {
+                "path": "/",
+                "method": "get"
+              }
+            },
+            {
+              "http": {
+                "path": "/{proxy+}",
+                "method": "any"
+              }
+            }
+          ],
+          "name": "fastapi-lambda-dev-api"
+        }
+      },
+      "plugins": [
+        "serverless-python-requirements"
+      ],
+      "custom": {
+        "pythonRequirements": {
+          "dockerizePip": "non-linux"
+        }
+      }
+    },
+    "serviceRawFile": "service: fastapi-lambda\n\nprovider:\n  name: aws\n  runtime: python3.10\n  stage: dev\n  region: us-east-2\n\nfunctions:\n  api:\n    handler: app.handler\n    events:\n      - http:\n          path: /\n          method: get\n      - http:\n          path: /{proxy+}\n          method: any\n\nplugins:\n  - serverless-python-requirements\n\ncustom:\n  pythonRequirements:\n    dockerizePip: non-linux\n",
+    "command": [
+      "remove"
+    ],
+    "options": {},
+    "error": null,
+    "params": {},
+    "machineId": "9f8be4c5a19c3a2a3761e1df6513cd1b",
+    "accessKeyV2": "<REDACTED>",
+    "accessKeyV1": "<REDACTED>",
+    "orgId": "d5ab1fbe-30fa-4710-adb3-bbde28e7f1fb",
+    "orgName": "halilagin",
+    "userId": "GPRkFZltf3Z2S72m9F",
+    "dashboard": {
+      "isEnabledForService": false,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": null,
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": null,
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "userName": "halilagin",
+    "subscription": null,
+    "userEmail": "halil.agin@gmail.com",
+    "serviceProviderAwsCredentials": "<REDACTED>",
+    "serviceProviderAwsAccountId": "242609326423",
+    "versionSf": "4.1.4",
+    "serviceProviderAwsCfStackName": "fastapi-lambda-dev",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-east-2:242609326423:stack/fastapi-lambda-dev/e4545190-2e2a-11ef-b0d9-065bccd5f6af",
+    "serviceProviderAwsCfStackCreated": "2024-06-19T10:58:42.682Z",
+    "serviceProviderAwsCfStackUpdated": "2024-06-19T11:00:15.183Z",
+    "serviceProviderAwsCfStackStatus": "UPDATE_COMPLETE",
+    "serviceProviderAwsCfStackOutputs": [
+      {
+        "OutputKey": "ApiLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-2:242609326423:function:fastapi-lambda-dev-api:2",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-fastapi-lambda-dev-ApiLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "ServiceEndpoint",
+        "OutputValue": "https://r31fz7yh4g.execute-api.us-east-2.amazonaws.com/dev",
+        "Description": "URL of the service endpoint",
+        "ExportName": "sls-fastapi-lambda-dev-ServiceEndpoint"
+      },
+      {
+        "OutputKey": "ServerlessDeploymentBucketName",
+        "OutputValue": "fastapi-lambda-dev-serverlessdeploymentbucket-gwzc6hba97ke",
+        "ExportName": "sls-fastapi-lambda-dev-ServerlessDeploymentBucketName"
+      }
+    ]
+  }
+}
