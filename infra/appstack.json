@@ -1,9 +1,10 @@
 {
-  "aws_api_gateway_rest_api_id": "bkwdlb5hfk",
-  "aws_cognito_user_pool_id": "us-east-2_34vNSZJiK",
+  "aws_api_gateway_rest_api_id": "kxxae8ntuf",
+  "aws_cognito_user_pool_id": "us-east-2_cc7gy2sAg",
   "region": "us-east-2",
-  "aws_cognito_user_pool_client_id": "211q2crprtnl0433f7eerot3f7",
+  "aws_cognito_user_pool_client_id": "7aqpoojlaev0asb224a10pnbg3",
   "aws_cognito_user_pool_domain_main_id": "example-terraform-hosted-ui",
   "aws_cognito_user_example_username": "halilagin",
-  "aws_cognito_user_example_password": "YourTempPassword2024!!"
+  "aws_cognito_user_example_password": "YourTempPassword2024!!",
+  "aws_api_gateway_rest_api_execution_arn": "arn:aws:execute-api:us-east-2:242609326423:kxxae8ntuf"
 }

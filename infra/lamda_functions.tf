@@ -39,6 +39,7 @@ resource "aws_lambda_function" "example_lambda" {
   #amd64
   architectures = ["arm64"]
 
+
   s3_bucket         = aws_s3_bucket.lambda_fns.bucket
   s3_key            = "${each.key}.zip"
 

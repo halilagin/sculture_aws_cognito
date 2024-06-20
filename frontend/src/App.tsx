@@ -19,6 +19,7 @@ function App() {
           <SignUp /> 
           <Login /> 
           <UserSettings />
+          
         </AuthProvider>
         
       </div>
