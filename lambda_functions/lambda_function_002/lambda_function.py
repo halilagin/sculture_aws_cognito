@@ -56,7 +56,7 @@ async def get_root():
 
   response = {
     'statusCode': 200,
-    'body': "dynamo db item inserted successfully.",
+    'body': "dynamo db item inserted successfully multiple gateway creation!.",
     'headers': {
       'Content-Type': 'application/json'
       }

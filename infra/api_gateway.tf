@@ -40,45 +40,48 @@ resource "aws_iam_role_policy" "api_gateway_policy" {
 
 
 resource "aws_api_gateway_rest_api" "cognito_api" {
-  name = "CognitoAPI"
+  for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
+  name = each.key
   #role_arn = aws_iam_role.api_gateway_execution_role.arn
 	endpoint_configuration {
     types = ["REGIONAL"]
   }	
   provisioner "local-exec" {
     command = <<EOT
-    jq '.aws_api_gateway_rest_api_id = "${aws_api_gateway_rest_api.cognito_api.id}"' ${var.appstack_name} |sponge ${var.appstack_name}
-    jq '.aws_api_gateway_rest_api_execution_arn = "${aws_api_gateway_rest_api.cognito_api.execution_arn}"' ${var.appstack_name} |sponge ${var.appstack_name}
+    jq '.aws_api_gateway_rest_api_id_${self.name} = "${self.id}"' ${var.appstack_name} |sponge ${var.appstack_name}
+    jq '.aws_api_gateway_rest_api_execution_arn_${self.name} = "${self.execution_arn}"' ${var.appstack_name} |sponge ${var.appstack_name}
     EOT
   } 
 }
 
 resource "aws_api_gateway_resource" "api_resource" {
   for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
-  rest_api_id = aws_api_gateway_rest_api.cognito_api.id
-  parent_id   = aws_api_gateway_rest_api.cognito_api.root_resource_id
-  path_part   = each.key
+  rest_api_id = aws_api_gateway_rest_api.cognito_api[each.key].id
+  parent_id   = aws_api_gateway_rest_api.cognito_api[each.key].root_resource_id
+  #path_part  = each.key
+  path_part  = "{proxy+}"
 }
 
 resource "aws_api_gateway_authorizer" "cognito_authorizer" {
+  for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
 name          = "cognito_authorizer"
 type          = "COGNITO_USER_POOLS"
-rest_api_id   = aws_api_gateway_rest_api.cognito_api.id
+rest_api_id   = aws_api_gateway_rest_api.cognito_api[each.key].id
 provider_arns = [aws_cognito_user_pool.sculture.arn]
 }
 
 resource "aws_api_gateway_method" "api_method" {
   for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
-  rest_api_id   = aws_api_gateway_rest_api.cognito_api.id
+  rest_api_id   = aws_api_gateway_rest_api.cognito_api[each.key].id
   resource_id   = aws_api_gateway_resource.api_resource[each.key].id
   http_method   = "ANY"
   authorization =   "COGNITO_USER_POOLS"
-  authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
+  authorizer_id = aws_api_gateway_authorizer.cognito_authorizer[each.key].id
 }
 
 resource "aws_api_gateway_integration" "lambda_integration" {
   for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
-  rest_api_id = aws_api_gateway_rest_api.cognito_api.id
+  rest_api_id = aws_api_gateway_rest_api.cognito_api[each.key].id
   resource_id = aws_api_gateway_resource.api_resource[each.key].id
   http_method = aws_api_gateway_method.api_method[each.key].http_method
   credentials = aws_iam_role.api_gateway_execution_role.arn
@@ -90,9 +93,10 @@ resource "aws_api_gateway_integration" "lambda_integration" {
 }
 
 resource "aws_api_gateway_deployment" "api_deployment" {
+  for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
   #stage_name  = "stage"
   stage_description = "Deployed at ${timestamp()}"
-  rest_api_id = aws_api_gateway_rest_api.cognito_api.id
+  rest_api_id = aws_api_gateway_rest_api.cognito_api[each.key].id
 
   lifecycle {
     create_before_destroy = true
@@ -104,7 +108,8 @@ resource "aws_api_gateway_deployment" "api_deployment" {
 }
 
 resource "aws_cloudwatch_log_group" "example" {
-    name = "/aws/apigateway/${aws_api_gateway_rest_api.cognito_api.name}"
+    for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
+    name = "/aws/apigateway/${aws_api_gateway_rest_api.cognito_api[each.key].name}"
     retention_in_days = 3
 }
 
@@ -162,19 +167,20 @@ resource "aws_lambda_permission" "apigw_lambda" {
 
   ## More: http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
   #source_arn = "arn:aws:execute-api:${var.region}:${var.accountId}:${aws_api_gateway_rest_api.cognito_api.id}/*/${aws_api_gateway_method.api_method.http_method}/${aws_api_gateway_resource.resource.path}"
-  source_arn = "${aws_api_gateway_rest_api.cognito_api.execution_arn}/*"
+  source_arn = "${aws_api_gateway_rest_api.cognito_api[each.key].execution_arn}/*"
  }
 
 
 
 
 resource "aws_api_gateway_stage" "example" {
-  deployment_id = aws_api_gateway_deployment.api_deployment.id
-  rest_api_id   = aws_api_gateway_rest_api.cognito_api.id
+  for_each = {  for i in local.lambda_functions_range: format("lambda_function_%03d", i) => i}
+  deployment_id = aws_api_gateway_deployment.api_deployment[each.key].id
+  rest_api_id   = aws_api_gateway_rest_api.cognito_api[each.key].id
   stage_name    = "stage"
 
   access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.example.arn
+    destination_arn = aws_cloudwatch_log_group.example[each.key].arn
     format          = "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"caller\":\"$context.identity.caller\",\"user\":\"$context.identity.user\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"resourcePath\":\"$context.resourcePath\",\"status\":\"$context.status\",\"protocol\":\"$context.protocol\",\"responseLength\":\"$context.responseLength\"}"
   }
 

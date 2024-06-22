@@ -2,5 +2,5 @@ source /usr/local/bin/awsha
 if [ ! -f appstack.json ]; then
   echo "{}" > appstack.json
 fi
-terraform plan -out=plan.out -var-file=default.tfvars
+terraform plan -out=plan.out -var-file=default.tfvars $@
 
